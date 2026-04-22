@@ -7,19 +7,19 @@ public record Transaction(
         int step,
         TransactionType type,
         BigDecimal amount,
-        CustomerBalance originCustomer,
-        CustomerBalance destinationCustomer,
-        boolean fraud,
-        boolean flaggedFraud
+        CustomerBalance origin,
+        CustomerBalance recipient,
+        boolean isFraud,
+        boolean isFlaggedFraud
 ) {
     public Transaction {
         Objects.requireNonNull(type, "O tipo da transação não pode ser nulo");
         Objects.requireNonNull(amount, "O valor da transação não pode ser nulo");
-        Objects.requireNonNull(originCustomer, "O cliente de origem não pode ser nulo");
-        Objects.requireNonNull(destinationCustomer, "O cliente de destino não pode ser nulo");
+        Objects.requireNonNull(origin, "O cliente de origem não pode ser nulo");
+        Objects.requireNonNull(recipient, "O cliente de destino não pode ser nulo");
 
-        if (step < 0) {
-            throw new IllegalArgumentException("O step não pode ser negativo");
+        if (step <= 0) {
+            throw new IllegalArgumentException("O step deve ser maior que zero");
         }
 
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
