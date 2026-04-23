@@ -2,9 +2,8 @@ package br.com.zenon.zenonfrauddetector;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class Main {
 
@@ -39,20 +38,12 @@ public class Main {
                 }
                 testarStreams(args[1]);
             }
-            case "todos" -> {
-                testarTransacoesManuais();
-
-                if (args.length >= 2) {
-                    System.out.println();
-                    System.out.println("==== Transações importadas do CSV ====");
-                    testarIngestaoCsv(args[1]);
+            case "benchmark" -> {
+                if (args.length < 2) {
+                    System.out.println("Informe o caminho do arquivo CSV.");
+                    return;
                 }
-
-                if (args.length >= 3) {
-                    System.out.println();
-                    System.out.println("==== Transações válidas do CSV com erros ====");
-                    testarIngestaoCsvComErros(args[2]);
-                }
+                testarBenchmark(args[1]);
             }
             default -> exibirAjuda();
         }
@@ -64,7 +55,7 @@ public class Main {
         System.out.println("  ingestao <arquivo_csv>");
         System.out.println("  erros <arquivo_csv_com_erros>");
         System.out.println("  streams <arquivo_csv>");
-        System.out.println("  todos <arquivo_csv_normal> <arquivo_csv_com_erros>");
+        System.out.println("  benchmark <arquivo_csv>");
     }
 
     private static void testarTransacoesManuais() {
@@ -156,23 +147,69 @@ public class Main {
                     .forEach(System.out::println);
 
             System.out.println("3. Clientes Suspeitos:");
-            analyzer.top5SuspiciousCustomers()
-                    .forEach(System.out::println);
+            analyzer.top5SuspiciousCustomers().forEach(System.out::println);
 
             System.out.println("4. Prejuízo Total: " +
                     analyzer.totalFraudLoss().setScale(2).toPlainString());
 
             System.out.println("5. Fraudes por Tipo:");
             analyzer.countFraudsByType()
-                    .entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByKey(Comparator.comparing(Enum::name)))
-                    .forEach(entry ->
-                            System.out.println(" - " + entry.getKey() + ": " + entry.getValue())
-                    );
+                    .forEach((type, total) ->
+                            System.out.println(" - " + type + ": " + total));
+        } catch (IOException exception) {
+            System.out.println("Erro ao ler o arquivo CSV: " + exception.getMessage());
+        }
+    }
+
+    private static void testarBenchmark(String fileName) {
+        TransactionIngestor ingestor = new TransactionIngestor();
+
+        try {
+            List<Transaction> transactions = ingestor.ingest(fileName, 100_000);
+
+            System.out.println("Total de transações carregadas: " + transactions.size());
+
+            TransactionRepository listRepository = new TransactionListRepository(transactions);
+            TransactionRepository mapRepository = new TransactionMapRepository(transactions);
+
+            String existingCustomer = "C1231006815";
+            String nonExistingCustomer = "C12345";
+            String worstCaseCustomer = "C1868032458";
+
+            System.out.println();
+            System.out.println("Busca com List - cliente existente:");
+            imprimirResultado(listRepository.findByOriginCustomerName(existingCustomer), existingCustomer);
+
+            System.out.println();
+            System.out.println("Busca com List - cliente inexistente:");
+            imprimirResultado(listRepository.findByOriginCustomerName(nonExistingCustomer), nonExistingCustomer);
+
+            System.out.println();
+            System.out.println("Benchmark pior caso com List:");
+            long startList = System.nanoTime();
+            Optional<Transaction> listResult = listRepository.findByOriginCustomerName(worstCaseCustomer);
+            long endList = System.nanoTime();
+            imprimirResultado(listResult, worstCaseCustomer);
+            System.out.println("Tempo List (ns): " + (endList - startList));
+
+            System.out.println();
+            System.out.println("Benchmark com Map:");
+            long startMap = System.nanoTime();
+            Optional<Transaction> mapResult = mapRepository.findByOriginCustomerName(worstCaseCustomer);
+            long endMap = System.nanoTime();
+            imprimirResultado(mapResult, worstCaseCustomer);
+            System.out.println("Tempo Map (ns): " + (endMap - startMap));
 
         } catch (IOException exception) {
             System.out.println("Erro ao ler o arquivo CSV: " + exception.getMessage());
+        }
+    }
+
+    private static void imprimirResultado(Optional<Transaction> transaction, String customerName) {
+        if (transaction.isPresent()) {
+            System.out.println(transaction.get());
+        } else {
+            System.out.println("Transação não encontrada para o cliente " + customerName);
         }
     }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 public class TransactionIngestor {
 
     public List<Transaction> ingest(String fileName) throws IOException {
-        return ingest(fileName, Integer.MAX_VALUE);
+        return ingest(fileName, 100_000);
     }
 
     public List<Transaction> ingest(String fileName, int maxLines) throws IOException {
