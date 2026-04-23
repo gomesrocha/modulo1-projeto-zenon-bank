@@ -1,4 +1,7 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.cli;
+
+import br.com.zenon.zenonfrauddetector.app.service.TransactionReport;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionReportResult;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -14,8 +17,8 @@ public class ReportMain {
 
             System.out.println(bundle.getString("report.missingFile"));
             System.out.println(bundle.getString("report.example") + ":");
-            System.out.println("java -Xmx128m -cp target/classes br.com.zenon.zenonfrauddetector.ReportMain pt ../data/PS_20174392719_1491204439457_log.csv");
-            System.out.println("java -Xmx128m -cp target/classes br.com.zenon.zenonfrauddetector.ReportMain en ../data/PS_20174392719_1491204439457_log.csv");
+            System.out.println("java -Xmx128m -cp target/classes br.com.zenon.zenonfrauddetector.app.cli.ReportMain pt ../data/PS_20174392719_1491204439457_log.csv");
+            System.out.println("java -Xmx128m -cp target/classes br.com.zenon.zenonfrauddetector.app.cli.ReportMain en ../data/PS_20174392719_1491204439457_log.csv");
             return;
         }
 

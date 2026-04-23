@@ -1,4 +1,8 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.infrastructure.ingestion;
+
+import br.com.zenon.zenonfrauddetector.domain.model.CustomerBalance;
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionType;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

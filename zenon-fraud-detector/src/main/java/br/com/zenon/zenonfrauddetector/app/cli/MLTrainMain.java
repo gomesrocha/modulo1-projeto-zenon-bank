@@ -1,11 +1,13 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.cli;
+
+import br.com.zenon.zenonfrauddetector.app.service.FraudModelTrainer;
 
 public class MLTrainMain {
 
     public static void main(String[] args) {
         if (args.length < 2) {
             System.out.println("Uso:");
-            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.MLTrainMain\" -Dexec.args=\"../data/PS_20174392719_1491204439457_log.csv models/fraud.model\"");
+            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.app.cli.MLTrainMain\" -Dexec.args=\"../data/PS_20174392719_1491204439457_log.csv models/fraud.model\"");
             return;
         }
 

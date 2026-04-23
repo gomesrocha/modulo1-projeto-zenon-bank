@@ -1,4 +1,10 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.infrastructure.persistence;
+
+import br.com.zenon.zenonfrauddetector.domain.model.CustomerBalance;
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionDBStats;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionType;
+import br.com.zenon.zenonfrauddetector.domain.repository.TransactionRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

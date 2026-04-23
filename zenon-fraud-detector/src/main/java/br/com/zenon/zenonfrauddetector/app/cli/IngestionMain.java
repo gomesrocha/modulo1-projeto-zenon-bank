@@ -1,5 +1,9 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.cli;
 
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionDBStats;
+import br.com.zenon.zenonfrauddetector.infrastructure.ingestion.EfficientTransactionIngestor;
+import br.com.zenon.zenonfrauddetector.infrastructure.persistence.TransactionSQLRepository;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 import java.io.IOException;
@@ -27,7 +31,7 @@ public class IngestionMain {
     public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Uso:");
-            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.IngestionMain\" -Dexec.args=\"../data/PS_20174392719_1491204439457_log.csv 4 false\"");
+            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.app.cli.IngestionMain\" -Dexec.args=\"../data/PS_20174392719_1491204439457_log.csv 4 false\"");
             return;
         }
 

@@ -1,4 +1,13 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.cli;
+
+import br.com.zenon.zenonfrauddetector.app.service.FraudAnalyzer;
+import br.com.zenon.zenonfrauddetector.domain.model.CustomerBalance;
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionType;
+import br.com.zenon.zenonfrauddetector.domain.repository.TransactionRepository;
+import br.com.zenon.zenonfrauddetector.infrastructure.ingestion.TransactionIngestor;
+import br.com.zenon.zenonfrauddetector.infrastructure.persistence.TransactionListRepository;
+import br.com.zenon.zenonfrauddetector.infrastructure.persistence.TransactionMapRepository;
 
 import java.io.IOException;
 import java.math.BigDecimal;

@@ -1,4 +1,6 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.service;
+
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionReportResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;

@@ -1,5 +1,9 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.cli;
 
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionDBStats;
+import br.com.zenon.zenonfrauddetector.infrastructure.ingestion.TransactionIngestor;
+import br.com.zenon.zenonfrauddetector.infrastructure.persistence.TransactionSQLRepository;
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 import java.io.IOException;
@@ -27,7 +31,7 @@ public class DBMain {
         if (args.length == 0) {
             System.out.println("Informe o caminho do arquivo CSV.");
             System.out.println("Exemplo:");
-            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.DBMain\" -Dexec.args=\"../data/PS_20174392719_1491204439457_log.csv\"");
+            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.app.cli.DBMain\" -Dexec.args=\"../data/PS_20174392719_1491204439457_log.csv\"");
             return;
         }
 

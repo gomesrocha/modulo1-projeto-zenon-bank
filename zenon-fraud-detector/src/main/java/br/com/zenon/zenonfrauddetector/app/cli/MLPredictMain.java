@@ -1,4 +1,10 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.cli;
+
+import br.com.zenon.zenonfrauddetector.app.service.FraudModelService;
+import br.com.zenon.zenonfrauddetector.domain.model.CustomerBalance;
+import br.com.zenon.zenonfrauddetector.domain.model.FraudPrediction;
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
+import br.com.zenon.zenonfrauddetector.domain.model.TransactionType;
 
 import java.math.BigDecimal;
 
@@ -7,7 +13,7 @@ public class MLPredictMain {
     public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Uso:");
-            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.MLPredictMain\" -Dexec.args=\"models/fraud.model\"");
+            System.out.println("mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.app.cli.MLPredictMain\" -Dexec.args=\"models/fraud.model\"");
             return;
         }
 

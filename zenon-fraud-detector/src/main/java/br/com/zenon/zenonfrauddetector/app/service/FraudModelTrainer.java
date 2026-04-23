@@ -1,5 +1,8 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.app.service;
 
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
+import br.com.zenon.zenonfrauddetector.infrastructure.ingestion.TransactionIngestor;
+import br.com.zenon.zenonfrauddetector.infrastructure.ml.WekaTransactionDatasetFactory;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
 import weka.core.SerializationHelper;

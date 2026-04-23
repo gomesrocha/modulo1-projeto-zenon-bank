@@ -1,5 +1,6 @@
-package br.com.zenon.zenonfrauddetector;
+package br.com.zenon.zenonfrauddetector.infrastructure.ml;
 
+import br.com.zenon.zenonfrauddetector.domain.model.Transaction;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
