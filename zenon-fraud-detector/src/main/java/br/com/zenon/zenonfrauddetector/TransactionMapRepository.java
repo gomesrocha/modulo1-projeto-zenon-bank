@@ -8,23 +8,27 @@ import java.util.Optional;
 
 public class TransactionMapRepository implements TransactionRepository {
 
-    private final Map<String, Transaction> transactionsByOriginCustomer;
+    private final Map<String, Transaction> transactionsByOriginName;
 
     public TransactionMapRepository(List<Transaction> transactions) {
         Objects.requireNonNull(transactions);
 
-        this.transactionsByOriginCustomer = new HashMap<>();
-
+        this.transactionsByOriginName = new HashMap<>();
         for (Transaction transaction : transactions) {
-            this.transactionsByOriginCustomer.put(
-                    transaction.origin().name(),
-                    transaction
-            );
+            this.transactionsByOriginName.put(transaction.origin().name(), transaction);
         }
     }
 
     @Override
     public Optional<Transaction> findByOriginCustomerName(String customerName) {
-        return Optional.ofNullable(transactionsByOriginCustomer.get(customerName));
+        return Optional.ofNullable(transactionsByOriginName.get(customerName));
+    }
+
+    @Override
+    public void save(Transaction transaction) {
+        transactionsByOriginName.put(
+                Objects.requireNonNull(transaction).origin().name(),
+                transaction
+        );
     }
 }
