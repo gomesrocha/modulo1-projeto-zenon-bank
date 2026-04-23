@@ -152,13 +152,15 @@ public class Main {
             analyzer.top3FraudsByAmount()
                     .stream()
                     .map(Transaction::amount)
+                    .map(value -> value.setScale(2).toPlainString())
                     .forEach(System.out::println);
 
             System.out.println("3. Clientes Suspeitos:");
             analyzer.top5SuspiciousCustomers()
                     .forEach(System.out::println);
 
-            System.out.println("4. Prejuízo Total: " + analyzer.totalFraudLoss());
+            System.out.println("4. Prejuízo Total: " +
+                    analyzer.totalFraudLoss().setScale(2).toPlainString());
 
             System.out.println("5. Fraudes por Tipo:");
             analyzer.countFraudsByType()
