@@ -1,6 +1,5 @@
 package br.com.zenon.zenonfrauddetector;
 
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,15 +11,22 @@ import java.util.Optional;
 public class TransactionIngestor {
 
     public List<Transaction> ingest(String fileName) throws IOException {
+        return ingest(fileName, Integer.MAX_VALUE);
+    }
+
+    public List<Transaction> ingest(String fileName, int maxLines) throws IOException {
         List<Transaction> transactions = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             reader.readLine(); // cabeçalho
 
             String line;
-            while ((line = reader.readLine()) != null) {
+            int count = 0;
+
+            while ((line = reader.readLine()) != null && count < maxLines) {
                 try {
                     transactions.add(parseLine(line));
+                    count++;
                 } catch (Exception exception) {
                     System.err.println("Erro: " + line + " | " + exception);
                 }

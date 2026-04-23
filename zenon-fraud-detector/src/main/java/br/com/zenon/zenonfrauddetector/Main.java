@@ -2,7 +2,9 @@ package br.com.zenon.zenonfrauddetector;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -25,10 +27,17 @@ public class Main {
             }
             case "erros" -> {
                 if (args.length < 2) {
-                    System.out.println("Informe o caminho do arquivo CSV com dados ruins.");
+                    System.out.println("Informe o caminho do arquivo CSV com erros.");
                     return;
                 }
                 testarIngestaoCsvComErros(args[1]);
+            }
+            case "streams" -> {
+                if (args.length < 2) {
+                    System.out.println("Informe o caminho do arquivo CSV.");
+                    return;
+                }
+                testarStreams(args[1]);
             }
             case "todos" -> {
                 testarTransacoesManuais();
@@ -54,13 +63,8 @@ public class Main {
         System.out.println("  manual");
         System.out.println("  ingestao <arquivo_csv>");
         System.out.println("  erros <arquivo_csv_com_erros>");
+        System.out.println("  streams <arquivo_csv>");
         System.out.println("  todos <arquivo_csv_normal> <arquivo_csv_com_erros>");
-        System.out.println();
-        System.out.println("Exemplos com Maven:");
-        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"manual\"");
-        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"ingestao ../data/PS_20174392719_1491204439457_log.csv\"");
-        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"erros data/paysim_with_bad_data.csv\"");
-        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"todos ../data/PS_20174392719_1491204439457_log.csv data/paysim_with_bad_data.csv\"");
     }
 
     private static void testarTransacoesManuais() {
@@ -129,6 +133,41 @@ public class Main {
 
             System.out.println(transactions.size());
             transactions.forEach(System.out::println);
+
+        } catch (IOException exception) {
+            System.out.println("Erro ao ler o arquivo CSV: " + exception.getMessage());
+        }
+    }
+
+    private static void testarStreams(String fileName) {
+        TransactionIngestor ingestor = new TransactionIngestor();
+
+        try {
+            List<Transaction> transactions = ingestor.ingest(fileName, 50_000);
+            FraudAnalyzer analyzer = new FraudAnalyzer(transactions);
+
+            System.out.println("1. Total de Fraudes: " + analyzer.countFrauds());
+
+            System.out.println("2. Top 3 Fraudes de Maior Valor:");
+            analyzer.top3FraudsByAmount()
+                    .stream()
+                    .map(Transaction::amount)
+                    .forEach(System.out::println);
+
+            System.out.println("3. Clientes Suspeitos:");
+            analyzer.top5SuspiciousCustomers()
+                    .forEach(System.out::println);
+
+            System.out.println("4. Prejuízo Total: " + analyzer.totalFraudLoss());
+
+            System.out.println("5. Fraudes por Tipo:");
+            analyzer.countFraudsByType()
+                    .entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByKey(Comparator.comparing(Enum::name)))
+                    .forEach(entry ->
+                            System.out.println(" - " + entry.getKey() + ": " + entry.getValue())
+                    );
 
         } catch (IOException exception) {
             System.out.println("Erro ao ler o arquivo CSV: " + exception.getMessage());
