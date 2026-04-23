@@ -9,20 +9,20 @@ public record CustomerBalance(
         BigDecimal newBalance
 ) {
     public CustomerBalance {
-        Objects.requireNonNull(name, "O nome do cliente não pode ser nulo");
-        Objects.requireNonNull(oldBalance, "O saldo anterior não pode ser nulo");
-        Objects.requireNonNull(newBalance, "O novo saldo não pode ser nulo");
+        Objects.requireNonNull(name, "name should not be null");
+        Objects.requireNonNull(oldBalance, "oldBalance should not be null");
+        Objects.requireNonNull(newBalance, "newBalance should not be null");
 
         if (name.isBlank()) {
-            throw new IllegalArgumentException("O nome do cliente não pode ser vazio");
+            throw new IllegalArgumentException("name should not be empty");
         }
 
         if (oldBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("O saldo anterior não pode ser negativo");
+            throw new IllegalArgumentException("oldBalance should be positive: " + oldBalance);
         }
 
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("O novo saldo não pode ser negativo");
+            throw new IllegalArgumentException("newBalance should be positive: " + newBalance);
         }
     }
 }

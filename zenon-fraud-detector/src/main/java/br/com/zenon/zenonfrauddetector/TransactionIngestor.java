@@ -7,25 +7,23 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TransactionIngestor {
-
-    private static final int MAX_TRANSACTIONS = 1000;
-    private static final int EXPECTED_COLUMNS = 11;
 
     public List<Transaction> ingest(String fileName) throws IOException {
         List<Transaction> transactions = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            reader.readLine(); // ignora o cabeçalho do CSV
+            reader.readLine(); // cabeçalho
 
             String line;
-            int count = 0;
-
-            while ((line = reader.readLine()) != null && count < MAX_TRANSACTIONS) {
-                Transaction transaction = parseLine(line);
-                transactions.add(transaction);
-                count++;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    transactions.add(parseLine(line));
+                } catch (Exception exception) {
+                    System.err.println("Erro: " + line + " | " + exception);
+                }
             }
         }
 
@@ -35,43 +33,65 @@ public class TransactionIngestor {
     private Transaction parseLine(String line) {
         String[] columns = line.split(",", -1);
 
-        if (columns.length != EXPECTED_COLUMNS) {
-            throw new IllegalArgumentException("Linha inválida no CSV: " + line);
+        if (columns.length != 11) {
+            throw new IllegalArgumentException("invalid CSV line");
         }
 
-        int step = Integer.parseInt(columns[0].trim());
+        int step = Integer.parseInt(required(columns[0]));
+        TransactionType type = TransactionType.valueOf(required(columns[1]));
+        BigDecimal amount = parseBigDecimal(columns[2]);
 
-        TransactionType type = TransactionType.valueOf(columns[1].trim());
-
-        BigDecimal amount = new BigDecimal(columns[2].trim());
-
-        CustomerBalance originCustomer = new CustomerBalance(
-                columns[3].trim(),
-                new BigDecimal(columns[4].trim()),
-                new BigDecimal(columns[5].trim())
+        CustomerBalance origin = new CustomerBalance(
+                parseName(columns[3]),
+                parseBigDecimal(columns[4]),
+                parseBigDecimal(columns[5])
         );
 
-        CustomerBalance destinationCustomer = new CustomerBalance(
-                columns[6].trim(),
-                new BigDecimal(columns[7].trim()),
-                new BigDecimal(columns[8].trim())
+        CustomerBalance recipient = new CustomerBalance(
+                parseName(columns[6]),
+                parseBigDecimal(columns[7]),
+                parseBigDecimal(columns[8])
         );
 
-        boolean fraud = parseBoolean(columns[9]);
-        boolean flaggedFraud = parseBoolean(columns[10]);
+        boolean isFraud = parseBoolean(columns[9]);
+        boolean isFlaggedFraud = parseBoolean(columns[10]);
 
         return new Transaction(
                 step,
                 type,
                 amount,
-                originCustomer,
-                destinationCustomer,
-                fraud,
-                flaggedFraud
+                origin,
+                recipient,
+                isFraud,
+                isFlaggedFraud
         );
     }
 
+    private String required(String value) {
+        return Optional.ofNullable(value)
+                .map(String::trim)
+                .orElseThrow(() -> new IllegalArgumentException("value should not be null"));
+    }
+
+    private String parseName(String value) {
+        return Optional.ofNullable(value)
+                .map(String::trim)
+                .orElse("");
+    }
+
+    private BigDecimal parseBigDecimal(String value) {
+        String cleaned = Optional.ofNullable(value)
+                .map(String::trim)
+                .orElse("");
+        return new BigDecimal(cleaned);
+    }
+
     private boolean parseBoolean(String value) {
-        return "1".equals(value.trim());
+        String cleaned = required(value);
+        return switch (cleaned) {
+            case "0" -> false;
+            case "1" -> true;
+            default -> throw new IllegalArgumentException("boolean value should be 0 or 1: " + cleaned);
+        };
     }
 }

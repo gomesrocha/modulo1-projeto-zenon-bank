@@ -13,17 +13,17 @@ public record Transaction(
         boolean isFlaggedFraud
 ) {
     public Transaction {
-        Objects.requireNonNull(type, "O tipo da transação não pode ser nulo");
-        Objects.requireNonNull(amount, "O valor da transação não pode ser nulo");
-        Objects.requireNonNull(origin, "O cliente de origem não pode ser nulo");
-        Objects.requireNonNull(recipient, "O cliente de destino não pode ser nulo");
+        Objects.requireNonNull(type, "type should not be null");
+        Objects.requireNonNull(amount, "amount should not be null");
+        Objects.requireNonNull(origin, "origin should not be null");
+        Objects.requireNonNull(recipient, "recipient should not be null");
 
-        if (step <= 0) {
-            throw new IllegalArgumentException("O step deve ser maior que zero");
+        if (step < 1) {
+            throw new IllegalArgumentException("step should be positive: " + step);
         }
 
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("O valor da transação não pode ser negativo");
+            throw new IllegalArgumentException("amount should be positive: " + amount);
         }
     }
 }

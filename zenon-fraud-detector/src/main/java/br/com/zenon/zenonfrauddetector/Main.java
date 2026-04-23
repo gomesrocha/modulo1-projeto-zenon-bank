@@ -7,19 +7,60 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        testarTransacoesManuais();
-
-        System.out.println();
-        System.out.println("==== Transações importadas do CSV ====");
-
         if (args.length == 0) {
-            System.out.println("Informe o caminho do arquivo CSV do PaySim.");
-            System.out.println("Exemplo:");
-            System.out.println("./gradlew run --args=\"data/PS_20174392719_1491204439457_log.csv\"");
+            exibirAjuda();
             return;
         }
 
-        testarIngestaoCsv(args[0]);
+        String modo = args[0];
+
+        switch (modo) {
+            case "manual" -> testarTransacoesManuais();
+            case "ingestao" -> {
+                if (args.length < 2) {
+                    System.out.println("Informe o caminho do arquivo CSV.");
+                    return;
+                }
+                testarIngestaoCsv(args[1]);
+            }
+            case "erros" -> {
+                if (args.length < 2) {
+                    System.out.println("Informe o caminho do arquivo CSV com dados ruins.");
+                    return;
+                }
+                testarIngestaoCsvComErros(args[1]);
+            }
+            case "todos" -> {
+                testarTransacoesManuais();
+
+                if (args.length >= 2) {
+                    System.out.println();
+                    System.out.println("==== Transações importadas do CSV ====");
+                    testarIngestaoCsv(args[1]);
+                }
+
+                if (args.length >= 3) {
+                    System.out.println();
+                    System.out.println("==== Transações válidas do CSV com erros ====");
+                    testarIngestaoCsvComErros(args[2]);
+                }
+            }
+            default -> exibirAjuda();
+        }
+    }
+
+    private static void exibirAjuda() {
+        System.out.println("Uso:");
+        System.out.println("  manual");
+        System.out.println("  ingestao <arquivo_csv>");
+        System.out.println("  erros <arquivo_csv_com_erros>");
+        System.out.println("  todos <arquivo_csv_normal> <arquivo_csv_com_erros>");
+        System.out.println();
+        System.out.println("Exemplos com Maven:");
+        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"manual\"");
+        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"ingestao ../data/PS_20174392719_1491204439457_log.csv\"");
+        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"erros data/paysim_with_bad_data.csv\"");
+        System.out.println("  mvn exec:java -Dexec.mainClass=\"br.com.zenon.zenonfrauddetector.Main\" -Dexec.args=\"todos ../data/PS_20174392719_1491204439457_log.csv data/paysim_with_bad_data.csv\"");
     }
 
     private static void testarTransacoesManuais() {
@@ -77,8 +118,20 @@ public class Main {
 
         } catch (IOException exception) {
             System.out.println("Erro ao ler o arquivo CSV: " + exception.getMessage());
-        } catch (IllegalArgumentException exception) {
-            System.out.println("Erro ao processar uma linha do CSV: " + exception.getMessage());
+        }
+    }
+
+    private static void testarIngestaoCsvComErros(String fileName) {
+        TransactionIngestor ingestor = new TransactionIngestor();
+
+        try {
+            List<Transaction> transactions = ingestor.ingest(fileName);
+
+            System.out.println(transactions.size());
+            transactions.forEach(System.out::println);
+
+        } catch (IOException exception) {
+            System.out.println("Erro ao ler o arquivo CSV: " + exception.getMessage());
         }
     }
 }
